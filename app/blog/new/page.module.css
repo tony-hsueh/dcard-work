@@ -1,0 +1,25 @@
+.main {
+  background-color: var(--bs-primary);
+  height: calc(100dvh - 52px);
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.blogContainer {
+  border: 1px solid #9a9a9a;
+  background-color: white;
+  max-width: 800px;
+  margin: 1.25rem auto 0;
+  border-radius: .25rem;
+  box-shadow: 0 0 6px 0 #828080;
+}
+
+.content {
+  padding: 2rem 4rem;
+ }
+
+ .errorHint {
+  margin-top: .25rem;
+  font-size: .875rem;
+  color: var(--bs-form-invalid-border-color);
+ }

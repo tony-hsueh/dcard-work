@@ -1,0 +1,40 @@
+.loginContainer {
+  background-color: var(--bs-primary);
+  height: calc(100dvh - 52px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-radius: .25rem;
+  margin: 0 auto;
+}
+
+.githubLink {
+  text-decoration: none;
+}
+
+.loginBtn {
+  padding: .5rem 1.5rem;
+  border-radius: .5rem;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-color: transparent;
+  margin: 0 auto;
+  text-decoration: none;
+}
+
+.btnIcon {
+  font-size: 2rem;
+}

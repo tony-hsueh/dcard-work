@@ -1,0 +1,129 @@
+.main {
+  background-color: var(--bs-primary);
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.blogContainer {
+  border: 1px solid #9a9a9a;
+  background-color: white;
+  max-width: 800px;
+  margin: 1.25rem auto 0;
+  border-radius: .25rem;
+  box-shadow: 0 0 6px 0 #828080;
+}
+
+.title {
+  padding: 2rem 4rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tagContainer {
+  display: flex;
+}
+
+.tag {
+  padding: .25rem;
+}
+
+.hashtag {
+  color: var(--tagColor);
+}
+
+.titleInput {
+  width: 100%;
+}
+
+.content {
+ padding: 2rem 4rem;
+ border-top: 1px solid #c3c3c335;
+}
+
+.commentContainer {
+  padding: 2rem 4rem;
+  border-top: 1px solid #c3c3c335;
+}
+
+.comment {
+  display: flex;
+}
+
+.comment:not(:last-child) {
+  margin-bottom: 1.5rem;
+}
+
+.userIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.cardContainer {
+  flex-grow: 1;
+  position: relative;
+}
+
+.commentCard {
+  border-radius: 4px;
+  margin-left: .5rem;
+}
+
+.commentCard.owner {
+  border: 1px solid #ff954c96;
+}
+
+.commentCard.notOwner {
+  border: 1px solid #7e7e7e96;
+}
+
+.chatArrow {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 11px;
+  left: 3px; 
+  transform: rotate(-45deg); 
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.chatArrow.owner {
+  border: 1px solid #ff954c96;
+  background-color: #ffc9a4;
+}
+
+.chatArrow.notOwner {
+  border: 1px solid #7e7e7e96;
+  background-color: #bdaca3;
+}
+
+.commentUser { 
+  padding: .5rem 1rem;
+}
+
+.commentCard.owner > .commentUser {
+  border-bottom: 1px solid #ff954c96;
+  background-color: #ffc9a4;
+}
+
+.commentCard.notOwner > .commentUser {
+  border-bottom: 1px solid #7e7e7e96;
+  background-color: #bdaca3;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: .25rem;
+}
+
+.commentDate {
+  font-size: 14px;
+}
+
+.commentContent {
+  padding: 1rem;
+}

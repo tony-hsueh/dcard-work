@@ -1,0 +1,55 @@
+.navbar {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  padding: .5rem 1rem;
+  background-color: var(--bs-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.logo::first-letter {
+  font-size: 1.5rem;
+  font-style: italic;
+  margin-right: 2px;
+}
+
+.navlink {
+  margin-left: .5rem;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.navlink:hover {
+  background-color: #48464636;
+}
+
+.leftContainer,
+.rightContainer {
+  display: flex;
+  align-items: center;
+}
+
+.userIcon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+}
+
+.notLoginIcon {
+  font-size: 20px;
+}

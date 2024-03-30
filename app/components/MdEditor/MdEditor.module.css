@@ -1,0 +1,5 @@
+.errorHint {
+  margin-top: .25rem;
+  font-size: .875rem;
+  color: var(--bs-form-invalid-border-color);
+ }
