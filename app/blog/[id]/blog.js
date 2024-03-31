@@ -5,15 +5,17 @@ import dayjs from 'dayjs';
 import { getCookie } from 'cookies-next';
 import { useForm } from 'react-hook-form';
 import MDEditor from '@uiw/react-md-editor';
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Octokit } from 'octokit'
 import { Container, Form } from 'react-bootstrap';
 import { OWNER, REPO, TOKEN_COOKIE_NAME } from '@/parameters';
+import Navbar from '@/app/components/Navbar/Navbar';
 import MdEditor from '@/app/components/MdEditor/MdEditor';
 import styles from './page.module.css'
 import Image from 'next/image';
 
 const Blog = () => {
+  const router = useRouter()
   const token = getCookie(TOKEN_COOKIE_NAME)
   const {
     control,
@@ -126,118 +128,122 @@ const Blog = () => {
   }
   
   useEffect(() => {
+    if (!token) return router.push('/login')
     getBlog()
     getComments()
-  }, [])
+  }, [token])
   
   return (
-    <div className={styles.main}>
-      <Container>
-        <div className={styles.blogContainer}>
-          <Form onSubmit={handleSubmit(onSubmit)}>          
-            <div className={styles.title}>
-              <div style={{width: '70%'}}>
-                <p className={styles.createTime}>
-                  {issue.created_at !== '' && dayjs(issue.created_at).format('MMM D/YYYY')}
-                </p>
-                {isEdit? 
-                  <Form.Group className="mb-3">
-                    <Form.Control
-                      className={styles.titleInput}
-                      isInvalid={errors.title}
-                      type="text" 
-                      placeholder="標題" 
-                      {...register("title", { required: "標題必填" })}
-                    />
-                    {errors.title && <p className={styles.errorHint}>{errors.title.message}</p>}
-                  </Form.Group>
-                :
-                  <h2>{issue.title}</h2>
-                }                  
-                <div className={styles.tagContainer}>
-                  {issue.labels.map(label => 
-                    <div 
-                      key={label.id} 
-                      className={styles.tag} 
-                    >
-                      <span 
-                        style={{ "--tagColor": '#' + label.color}} 
-                        className={styles.hashtag}
+    <>
+      <Navbar />
+      <div className={styles.main}>
+        <Container>
+          <div className={styles.blogContainer}>
+            <Form onSubmit={handleSubmit(onSubmit)}>          
+              <div className={styles.title}>
+                <div style={{width: '70%'}}>
+                  <p className={styles.createTime}>
+                    {issue.created_at !== '' && dayjs(issue.created_at).format('MMM D/YYYY')}
+                  </p>
+                  {isEdit? 
+                    <Form.Group className="mb-3">
+                      <Form.Control
+                        className={styles.titleInput}
+                        isInvalid={errors.title}
+                        type="text" 
+                        placeholder="標題" 
+                        {...register("title", { required: "標題必填" })}
+                      />
+                      {errors.title && <p className={styles.errorHint}>{errors.title.message}</p>}
+                    </Form.Group>
+                  :
+                    <h2>{issue.title}</h2>
+                  }                  
+                  <div className={styles.tagContainer}>
+                    {issue.labels.map(label => 
+                      <div 
+                        key={label.id} 
+                        className={styles.tag} 
                       >
-                        #
-                      </span>
-                      {label.name}
-                    </div>
-                  )}   
+                        <span 
+                          style={{ "--tagColor": '#' + label.color}} 
+                          className={styles.hashtag}
+                        >
+                          #
+                        </span>
+                        {label.name}
+                      </div>
+                    )}   
+                  </div>
+                </div>
+                <div>
+                  {isEdit ?
+                    <>  
+                      <button 
+                        className="btn btn-light me-2"
+                        type='button'
+                        onClick={() => {setIsEdit(false)}}
+                      >
+                        取消
+                      </button>
+                      <button 
+                        className="btn btn-success"
+                      >
+                        更新文章
+                      </button>
+                    </>
+                  :
+                    <button 
+                      className="btn btn-secondary"
+                      type='button'
+                      onClick={() => {setIsEdit(true)}}
+                    >
+                      編輯
+                    </button>
+                  }
                 </div>
               </div>
-              <div>
+              <div className={styles.content} data-color-mode="light">
                 {isEdit ?
-                  <>  
-                    <button 
-                      className="btn btn-light me-2"
-                      type='button'
-                      onClick={() => {setIsEdit(false)}}
-                    >
-                      取消
-                    </button>
-                    <button 
-                      className="btn btn-success"
-                    >
-                      更新文章
-                    </button>
-                  </>
+                  <MdEditor control={control} errors={errors} />        
                 :
-                  <button 
-                    className="btn btn-secondary"
-                    type='button'
-                    onClick={() => {setIsEdit(true)}}
-                  >
-                    編輯
-                  </button>
+                  <MDEditor.Markdown source={issue.body} style={{ whiteSpace: 'pre-wrap' }} />
                 }
               </div>
-            </div>
-            <div className={styles.content} data-color-mode="light">
-              {isEdit ?
-                <MdEditor control={control} errors={errors} />        
-              :
-                <MDEditor.Markdown source={issue.body} style={{ whiteSpace: 'pre-wrap' }} />
-              }
-            </div>
-          </Form>
-          <div className={styles.commentContainer}>
-            {comments.map(comment =>  
-              <div className={styles.comment} key={comment.id}>
-                <div className={styles.userIcon}>
-                  <Image 
-                    src={comment.avatarUrl}
-                    alt='使用者圖片'
-                    width={40}
-                    height={40}  
-                  />
-                </div>
-                <div className={styles.cardContainer}>
-                  <div className={`${styles.chatArrow} ${comment.username === OWNER ? styles.owner : styles.notOwner}`}></div>
-                  <div className={`${styles.commentCard} ${comment.username === OWNER ? styles.owner : styles.notOwner}`}>
-                    <div className={styles.commentUser}>
-                      <span className={styles.username}>{comment.username}</span>
-                      <span className={styles.commentDate}>{dayjs(comment.created_at).format('MMM D/YYYY')}</span>
-                    </div>
-                    <div 
-                      className={styles.commentContent}
-                      data-color-mode="light"
-                    >
-                      <MDEditor.Markdown source={comment.body} style={{ whiteSpace: 'pre-wrap' }} />
+            </Form>
+            <div className={styles.commentContainer}>
+              {comments.map(comment =>  
+                <div className={styles.comment} key={comment.id}>
+                  <div className={styles.userIcon}>
+                    <Image 
+                      src={comment.avatarUrl}
+                      alt='使用者圖片'
+                      width={40}
+                      height={40}  
+                    />
+                  </div>
+                  <div className={styles.cardContainer}>
+                    <div className={`${styles.chatArrow} ${comment.username === OWNER ? styles.owner : styles.notOwner}`}></div>
+                    <div className={`${styles.commentCard} ${comment.username === OWNER ? styles.owner : styles.notOwner}`}>
+                      <div className={styles.commentUser}>
+                        <span className={styles.username}>{comment.username}</span>
+                        <span className={styles.commentDate}>{dayjs(comment.created_at).format('MMM D/YYYY')}</span>
+                      </div>
+                      <div 
+                        className={styles.commentContent}
+                        data-color-mode="light"
+                      >
+                        <MDEditor.Markdown source={comment.body} style={{ whiteSpace: 'pre-wrap' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </Container>
-    </div>
+        </Container>
+      </div>
+    </>
   )
 }
 

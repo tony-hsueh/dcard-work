@@ -7,6 +7,7 @@ import { Container } from 'react-bootstrap';
 import { FaGithub } from "react-icons/fa6";
 import { TOKEN_COOKIE_NAME } from '@/parameters';
 import { useRouter } from 'next/navigation';
+import Navbar from '../components/Navbar/Navbar';
 
 const Login = () => {
   const router = useRouter()
@@ -16,18 +17,21 @@ const Login = () => {
     if (token) router.push('/')
   },[])
   return (
-    <div className={styles.loginContainer}>
-      <Container>
-        <div className={styles.loginCard}>
-          <h3 className='mb-3'>登入後才可觀看文章全文</h3>
-          <a href={`https://github.com/login/oauth/authorize/?scope=repo&client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`} className={styles.githubLink}>
-            <button className={styles.loginBtn}>
-              <FaGithub className={styles.btnIcon} />Sign in with Github
-            </button>
-          </a>
-        </div>
-      </Container>
-    </div>
+    <>
+      <Navbar />
+      <div className={styles.loginContainer}>
+        <Container>
+          <div className={styles.loginCard}>
+            <h3 className='mb-3'>登入後才可觀看文章全文</h3>
+            <a href={`https://github.com/login/oauth/authorize/?scope=repo&client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`} className={styles.githubLink}>
+              <button className={styles.loginBtn}>
+                <FaGithub className={styles.btnIcon} />Sign in with Github
+              </button>
+            </a>
+          </div>
+        </Container>
+      </div>
+    </>
   )
 }
 

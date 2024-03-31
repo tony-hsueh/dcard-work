@@ -86,7 +86,7 @@ const Navbar = () => {
       }
     }
     getUserInfo()
-  }, [])
+  }, [token])
   return (
     <nav className={styles.navbar}>
       <div className={styles.leftContainer}>
@@ -109,7 +109,10 @@ const Navbar = () => {
         
         {user.avatarUrl === null
         ? 
-          <div className={styles.userIcon}>  
+          <div 
+            className={styles.userIcon} 
+            onClick={() => {router.push('/login')}}
+          >  
             <FaUser className={styles.notLoginIcon} />
           </div>
         :

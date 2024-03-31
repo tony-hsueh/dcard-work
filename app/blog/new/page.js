@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import { getCookie } from 'cookies-next';
 import { Container, Form } from 'react-bootstrap'
@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import MDEditor, { EditorContext } from '@uiw/react-md-editor';
 import { Octokit } from 'octokit';
 import { OWNER, REPO, TOKEN_COOKIE_NAME } from '@/parameters';
+import Navbar from '@/app/components/Navbar/Navbar';
 import styles from './page.module.css'
 
 const AddBlog = () => {
@@ -105,59 +106,62 @@ const AddBlog = () => {
   }, [])
 
   return (
-    <div className={styles.main}>
-      <Container>
-        <div className={styles.blogContainer}>
-          <div 
-            className={styles.content} 
-            data-color-mode="light"
-          >  
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <Form.Group className="mb-3">
-                <Form.Label>文章標題</Form.Label>
-                <Form.Control 
-                  isInvalid={errors.title}
-                  type="text" 
-                  placeholder="標題" 
-                  {...register("title", { required: "標題必填" })}
-                />
-                {errors.title && <p className={styles.errorHint}>{errors.title.message}</p>}
-              </Form.Group>
-              <Form.Label>內文</Form.Label>
-              <Controller
-                control={control}
-                name="body"
-                rules={{
-                  minLength: {
-                    value: 30,
-                    message: '文章至少需30字'
-                  },
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <MDEditor
-                    textareaProps={{
-                      placeholder: "請輸入內文"
-                    }}
-                    height={300}
-                    value={value}
-                    onChange={onChange}
-                    preview="edit"
-                    extraCommands={[codeEdit, codePreview]}
+    <>
+      <Navbar />
+      <div className={styles.main}>
+        <Container>
+          <div className={styles.blogContainer}>
+            <div 
+              className={styles.content} 
+              data-color-mode="light"
+            >  
+              <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form.Group className="mb-3">
+                  <Form.Label>文章標題</Form.Label>
+                  <Form.Control 
+                    isInvalid={errors.title}
+                    type="text" 
+                    placeholder="標題" 
+                    {...register("title", { required: "標題必填" })}
                   />
-                )}
-              />
-              {errors.body && <p className={styles.errorHint}>{errors.body.message}</p>}
-              <button 
-                className='btn btn-success d-block ms-auto mt-3 text-white'
-                type='submit'
-              >
-                上傳文章
-              </button>
-            </Form> 
+                  {errors.title && <p className={styles.errorHint}>{errors.title.message}</p>}
+                </Form.Group>
+                <Form.Label>內文</Form.Label>
+                <Controller
+                  control={control}
+                  name="body"
+                  rules={{
+                    minLength: {
+                      value: 30,
+                      message: '文章至少需30字'
+                    },
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <MDEditor
+                      textareaProps={{
+                        placeholder: "請輸入內文"
+                      }}
+                      height={300}
+                      value={value}
+                      onChange={onChange}
+                      preview="edit"
+                      extraCommands={[codeEdit, codePreview]}
+                    />
+                  )}
+                />
+                {errors.body && <p className={styles.errorHint}>{errors.body.message}</p>}
+                <button 
+                  className='btn btn-success d-block ms-auto mt-3 text-white'
+                  type='submit'
+                >
+                  上傳文章
+                </button>
+              </Form> 
+            </div>
           </div>
-        </div>
-      </Container>
-    </div>
+        </Container>
+      </div>
+    </>
   )
 }
 

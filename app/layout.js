@@ -3,7 +3,6 @@ import styles from './layout.module.css'
 import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/scss/global.scss'
-import Navbar from "./components/Navbar/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +15,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
         <div className={styles.globalContainer}>
           {children}
         </div>

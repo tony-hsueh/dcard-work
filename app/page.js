@@ -9,6 +9,7 @@ import styles from "./page.module.css";
 import { useSearchParams } from 'next/navigation'
 import { Container } from "react-bootstrap";
 import { Octokit } from 'octokit'
+import Navbar from "./components/Navbar/Navbar";
 import { TOKEN_COOKIE_NAME, OWNER, REPO } from "@/parameters";
 
 const PER_PAGE = 10;
@@ -143,13 +144,16 @@ export default function Home() {
   }, [])
 
   return (
-    <main className={styles.main}>
-      <Container>
-        <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
-        <Suspense>
-          <BlogsContainer />
-        </Suspense>
-      </Container>
-    </main>
+    <>
+      <Navbar />
+      <main className={styles.main}>
+        <Container>
+          <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
+          <Suspense>
+            <BlogsContainer />
+          </Suspense>
+        </Container>
+      </main>
+    </>
   );
 }
