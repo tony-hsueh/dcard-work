@@ -23,7 +23,7 @@ const BlogsContainer = () => {
   const page = useRef(1)
 
   async function getAccessToken() {  
-    const res =  await fetch('http://localhost:3000/api/auth', {
+    const res =  await fetch(`${window.origin}/api/auth`, {
       method: 'POST',
       headers: {
         "content-type": "application/json",
@@ -88,9 +88,23 @@ const BlogsContainer = () => {
           getIssues(token)
       }
     }
-    window.addEventListener('scroll', loadMoreBlog)
+    const throttle = () => {
+      let timer;
+      return (cb, delay) => {
+        if (timer) return;
+        timer = setTimeout(() => {
+          cb();
+          timer = null;
+        }, delay)
+      }
+    }
+    const scrollThrottle = throttle()
+    const scrollHandler = () => {
+      scrollThrottle(loadMoreBlog, 500)
+    }
+    window.addEventListener('scroll', scrollHandler)
     return () => {
-      window.removeEventListener('scroll', loadMoreBlog)
+      window.removeEventListener('scroll', scrollHandler)
     }
   }, [isAllBlogLoaded, token])
 
