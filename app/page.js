@@ -6,7 +6,7 @@ import { getCookie, setCookie } from 'cookies-next';
 import dayjs from "dayjs";
 import { FaRegComment } from "react-icons/fa";
 import styles from "./page.module.css";
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Container } from "react-bootstrap";
 import { Octokit } from 'octokit'
 import Navbar from "./components/Navbar/Navbar";
@@ -16,6 +16,7 @@ const PER_PAGE = 10;
 
 const BlogsContainer = () => {
   const token = getCookie(TOKEN_COOKIE_NAME);
+  const router = useRouter()
   const searchParams = useSearchParams()
   const search = searchParams.get('code')
   const [isAllBlogLoaded, setIsAllBlogLoaded] = useState(false)
@@ -41,6 +42,7 @@ const BlogsContainer = () => {
     }
 
     setCookie(TOKEN_COOKIE_NAME, responseToken.token);
+    router.push('/')
   }
 
   async function getIssues(token) {
@@ -78,7 +80,9 @@ const BlogsContainer = () => {
     if (search && !token) {  
       getAccessToken()
     }
-    getIssues(token)
+    if (!search) {
+      getIssues(token)
+    }
   }, [search, token])
 
   useEffect(() => {
@@ -163,7 +167,7 @@ export default function Home() {
       <main className={styles.main}>
         <Container>
           <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
-          <Suspense>
+          <Suspense>   
             <BlogsContainer />
           </Suspense>
         </Container>
