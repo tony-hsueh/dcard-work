@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { getCookie, setCookie } from 'cookies-next';
 import dayjs from "dayjs";
@@ -13,12 +13,12 @@ import { TOKEN_COOKIE_NAME, OWNER, REPO } from "@/parameters";
 
 const PER_PAGE = 10;
 
-export default function Home() {
+const BlogsContainer = () => {
   const token = getCookie(TOKEN_COOKIE_NAME);
-  const [isAllBlogLoaded, setIsAllBlogLoaded] = useState(false)
-  const [issues, setIssues] = useState([])
   const searchParams = useSearchParams()
   const search = searchParams.get('code')
+  const [isAllBlogLoaded, setIsAllBlogLoaded] = useState(false)
+  const [issues, setIssues] = useState([])
   const page = useRef(1)
 
   async function getAccessToken() {  
@@ -73,17 +73,12 @@ export default function Home() {
     setIssues(prev => [...prev, ... newIssues])
   }
 
-  useEffect(() => {   
-    window.scroll({
-      top: 0,
-      left: 0,
-    });
-     
+  useEffect(() => {
     if (search && !token) {  
       getAccessToken()
     }
     getIssues(token)
-  }, [token, search])
+  }, [search, token])
 
   useEffect(() => {
     const loadMoreBlog = () => {  
@@ -97,45 +92,63 @@ export default function Home() {
       window.removeEventListener('scroll', loadMoreBlog)
     }
   }, [isAllBlogLoaded, token])
+
+  return (
+    <>
+      {issues.length > 0 && issues.map(issue =>  
+        <div 
+          className={styles.blogCard}
+          key={issue.id}
+        >
+          <p className={styles.createTime}>{dayjs(issue.created_at).format('MMM D/YYYY')}</p>
+          <div className={styles.content}>
+            <Link className={styles.blogTitle} href={`/blog/${issue.number}`}>
+              {issue.title}
+            </Link>
+            <div className={styles.tagContainer}>
+              {issue.labels.map(label => 
+                <div 
+                  key={label.id} 
+                  className={styles.tag} 
+                >
+                  <span 
+                    style={{ "--tagColor": '#' + label.color}} className={styles.hashtag}
+                  >
+                    #
+                  </span>
+                  {label.name}
+                </div>
+              )}
+            </div>
+            <div className={styles.toolbarContainer}>
+              <div className={styles.comment}>
+                <FaRegComment />
+                <span>{issue.comments} Comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {isAllBlogLoaded && <p className={styles.allLoadedHint}>文章已全部載入</p>}
+    </>
+  )
+}
+
+export default function Home() {
+  useEffect(() => {   
+    window.scroll({
+      top: 0,
+      left: 0,
+    });
+  }, [])
+
   return (
     <main className={styles.main}>
       <Container>
         <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
-        {issues.length > 0 && issues.map(issue =>  
-          <div 
-            className={styles.blogCard}
-            key={issue.id}
-          >
-            <p className={styles.createTime}>{dayjs(issue.created_at).format('MMM D/YYYY')}</p>
-            <div className={styles.content}>
-              <Link className={styles.blogTitle} href={`/blog/${issue.number}`}>
-                {issue.title}
-              </Link>
-              <div className={styles.tagContainer}>
-                {issue.labels.map(label => 
-                  <div 
-                    key={label.id} 
-                    className={styles.tag} 
-                  >
-                    <span 
-                      style={{ "--tagColor": '#' + label.color}} className={styles.hashtag}
-                    >
-                      #
-                    </span>
-                    {label.name}
-                  </div>
-                )}
-              </div>
-              <div className={styles.toolbarContainer}>
-                <div className={styles.comment}>
-                  <FaRegComment />
-                  <span>{issue.comments} Comments</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {isAllBlogLoaded && <p className={styles.allLoadedHint}>文章已全部載入</p>}
+        <Suspense>
+          <BlogsContainer />
+        </Suspense>
       </Container>
     </main>
   );
