@@ -8,13 +8,15 @@ import MDEditor from '@uiw/react-md-editor';
 import { useParams, useRouter } from 'next/navigation'
 import { Octokit } from 'octokit'
 import { Container, Form } from 'react-bootstrap';
-import { OWNER, REPO, TOKEN_COOKIE_NAME } from '@/parameters';
+import { OWNER, REPO, STATUS, TOKEN_COOKIE_NAME } from '@/parameters';
 import Navbar from '@/app/components/Navbar/Navbar';
 import MdEditor from '@/app/components/MdEditor/MdEditor';
 import styles from './page.module.css'
+import Alert from '@/app/components/Alert/Alert';
 import Image from 'next/image';
+import useAlert from '@/app/hooks/useAlert';
 
-const Blog = () => {
+const Blog = ({username}) => {
   const router = useRouter()
   const token = getCookie(TOKEN_COOKIE_NAME)
   const {
@@ -40,6 +42,8 @@ const Blog = () => {
     created_at: "",
     labels: [],
   })
+
+  const [alertObj, setAlertObj] = useAlert()
 
   const onSubmit = (data) => {
     updateIssue(data.title, data.body)
@@ -92,8 +96,18 @@ const Blog = () => {
         }
       })
       setIsEdit(false)
+      setAlertObj({
+        show: true,
+        msg: '文章更新成功',
+        status: STATUS.success,
+      })
       getBlog()
     } catch (err) {
+      setAlertObj({
+        show: true,
+        msg: '更新失敗（例外錯誤）',
+        status: STATUS.danger,
+      })
       console.error(err)
     }   
   }
@@ -136,6 +150,11 @@ const Blog = () => {
   return (
     <>
       <Navbar />
+      <Alert
+        show={alertObj.show} 
+        status={alertObj.status}
+        msg={alertObj.msg}
+      />
       <div className={styles.main}>
         <Container>
           <div className={styles.blogContainer}>
@@ -176,7 +195,7 @@ const Blog = () => {
                     )}   
                   </div>
                 </div>
-                <div>
+                <div style={{display: username === OWNER ? 'block' : 'none'}}>
                   {isEdit ?
                     <>  
                       <button 

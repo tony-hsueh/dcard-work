@@ -1,13 +1,15 @@
 "use client";
 import React, { useContext, useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getCookie } from 'cookies-next';
 import { Container, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
-import MDEditor, { EditorContext } from '@uiw/react-md-editor';
+import MdEditor from '@/app/components/MdEditor/MdEditor';
 import { Octokit } from 'octokit';
 import { OWNER, REPO, TOKEN_COOKIE_NAME } from '@/parameters';
 import Navbar from '@/app/components/Navbar/Navbar';
+import Alert from '@/app/components/Alert/Alert';
+import useAlert from '@/app/hooks/useAlert';
 import styles from './page.module.css'
 
 const AddBlog = () => {
@@ -24,26 +26,9 @@ const AddBlog = () => {
       body: ""
     },
   })
+  const [alertObj, setAlertObj] = useAlert()
   const onSubmit = (data) => {
     handleNewBlog(data.title, data.body)
-  }
-  const EditBtn = () => {
-    const { dispatch } = useContext(EditorContext);
-    const click = () => {
-      dispatch({
-        preview: "edit"
-      });
-    };
-    return <button type='button' onClick={click}>編輯</button>
-  }
-  const PreviewBtn = () => {
-    const { dispatch } = useContext(EditorContext);
-    const click = () => {
-      dispatch({
-        preview: "preview"
-      });
-    };
-    return <button type='button' onClick={click}>預覽</button>
   }
 
   const getUserInfo = async() => {
@@ -81,33 +66,30 @@ const AddBlog = () => {
       })
       router.push(`/blog/${createdBlog.data.number}`)
     } catch (err) {
+      setAlertObj({
+        show: true,
+        msg: '新增失敗（例外錯誤）',
+        status: STATUS.danger,
+      })
       console.error(err)
     }   
   }
-
-  const codeEdit = {
-    name: "edit",
-    keyCommand: "edit",
-    value: "edit",
-    icon: <EditBtn />
-  };
-  const codePreview = {
-    name: "preview",
-    keyCommand: "preview",
-    value: "preview",
-    icon: <PreviewBtn />
-  };
 
   useEffect(() => {
     // 如果沒有 token 或用 token 的使用者非 OWNER 不能進來
     if(!token) return router.push('/');
     
     getUserInfo()
-  }, [])
+  }, [token])
 
   return (
     <>
       <Navbar />
+      <Alert
+        show={alertObj.show} 
+        status={alertObj.status}
+        msg={alertObj.msg}
+      />
       <div className={styles.main}>
         <Container>
           <div className={styles.blogContainer}>
@@ -127,29 +109,7 @@ const AddBlog = () => {
                   {errors.title && <p className={styles.errorHint}>{errors.title.message}</p>}
                 </Form.Group>
                 <Form.Label>內文</Form.Label>
-                <Controller
-                  control={control}
-                  name="body"
-                  rules={{
-                    minLength: {
-                      value: 30,
-                      message: '文章至少需30字'
-                    },
-                  }}
-                  render={({ field: { onChange, value } }) => (
-                    <MDEditor
-                      textareaProps={{
-                        placeholder: "請輸入內文"
-                      }}
-                      height={300}
-                      value={value}
-                      onChange={onChange}
-                      preview="edit"
-                      extraCommands={[codeEdit, codePreview]}
-                    />
-                  )}
-                />
-                {errors.body && <p className={styles.errorHint}>{errors.body.message}</p>}
+                <MdEditor control={control} errors={errors} />  
                 <button 
                   className='btn btn-success d-block ms-auto mt-3 text-white'
                   type='submit'

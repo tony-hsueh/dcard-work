@@ -93,7 +93,7 @@ a {
 body .w-md-editor-text-pre > code,
 body .w-md-editor-text-input {
   font-size: 1rem !important;
-  line-height: 1rem !important;
+  line-height: 1.2rem;
 }
 
 @media (prefers-color-scheme: dark) {

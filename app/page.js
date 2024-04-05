@@ -10,11 +10,13 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Container } from "react-bootstrap";
 import { Octokit } from 'octokit'
 import Navbar from "./components/Navbar/Navbar";
-import { TOKEN_COOKIE_NAME, OWNER, REPO } from "@/parameters";
+import Alert from "./components/Alert/Alert";
+import useAlert from "./hooks/useAlert";
+import { TOKEN_COOKIE_NAME, OWNER, REPO, STATUS } from "@/parameters";
 
 const PER_PAGE = 10;
 
-const BlogsContainer = () => {
+const BlogsContainer = ({setAlertObj}) => {
   const token = getCookie(TOKEN_COOKIE_NAME);
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -35,20 +37,28 @@ const BlogsContainer = () => {
     })
 
     const responseToken = await res.json()
+    const { msg, token } = responseToken.payload
 
-    // TODO 可以再加上popup toast
-    if (!responseToken.token) {
+    if (token === null) {
+      setAlertObj({
+        show: true,
+        msg,
+        status: STATUS.danger,
+      })
       return;
     }
 
-    setCookie(TOKEN_COOKIE_NAME, responseToken.token);
+    setCookie(TOKEN_COOKIE_NAME, token);
+    setAlertObj({
+      show: true,
+      msg,
+      status: STATUS.success,
+    })
     router.push('/')
   }
 
-  async function getIssues(token) {
-    const octokit = new Octokit({
-      auth: token
-    })
+  async function getIssues() {
+    const octokit = new Octokit()
     
     const resData = await octokit.request(`GET /repos/{owner}/{repo}/issues?per_page=${PER_PAGE}&page=${page.current}`, {
       owner: OWNER,
@@ -72,8 +82,8 @@ const BlogsContainer = () => {
         created_at: issue.created_at,
         labels: issue.labels,
       }
-  })
-    setIssues(prev => [...prev, ... newIssues])
+    })
+    setIssues(prev => [...prev, ...newIssues])
   }
 
   useEffect(() => {
@@ -81,7 +91,7 @@ const BlogsContainer = () => {
       getAccessToken()
     }
     if (!search) {
-      getIssues(token)
+      getIssues()
     }
   }, [search, token])
 
@@ -89,7 +99,7 @@ const BlogsContainer = () => {
     const loadMoreBlog = () => {  
       if(window.scrollY + window.innerHeight >= 
         document.documentElement.scrollHeight - 0.5 && !isAllBlogLoaded){       
-          getIssues(token)
+          getIssues()
       }
     }
     const throttle = () => {
@@ -110,7 +120,7 @@ const BlogsContainer = () => {
     return () => {
       window.removeEventListener('scroll', scrollHandler)
     }
-  }, [isAllBlogLoaded, token])
+  }, [isAllBlogLoaded])
 
   return (
     <>
@@ -154,6 +164,8 @@ const BlogsContainer = () => {
 }
 
 export default function Home() {
+  const [alertObj, setAlertObj] = useAlert()
+
   useEffect(() => {   
     window.scroll({
       top: 0,
@@ -164,11 +176,16 @@ export default function Home() {
   return (
     <>
       <Navbar />
+      <Alert
+        show={alertObj.show} 
+        status={alertObj.status}
+        msg={alertObj.msg}
+      />
       <main className={styles.main}>
         <Container>
           <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
           <Suspense>   
-            <BlogsContainer />
+            <BlogsContainer setAlertObj={setAlertObj} />
           </Suspense>
         </Container>
       </main>
