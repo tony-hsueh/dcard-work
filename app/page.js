@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { getCookie, setCookie } from 'cookies-next';
 import dayjs from "dayjs";
@@ -11,6 +11,7 @@ import { Container } from "react-bootstrap";
 import { Octokit } from 'octokit'
 import Navbar from "./components/Navbar/Navbar";
 import Alert from "./components/Alert/Alert";
+import Skeleton from "./components/Skeleton/Skeleton";
 import useAlert from "./hooks/useAlert";
 import { TOKEN_COOKIE_NAME, OWNER, REPO, STATUS } from "@/parameters";
 
@@ -124,6 +125,7 @@ const BlogsContainer = ({setAlertObj}) => {
 
   return (
     <>
+      {issues.length === 0 && <Skeleton />}
       {issues.length > 0 && issues.map(issue =>  
         <div 
           className={styles.blogCard}
@@ -184,9 +186,7 @@ export default function Home() {
       <main className={styles.main}>
         <Container>
           <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
-          <Suspense>   
             <BlogsContainer setAlertObj={setAlertObj} />
-          </Suspense>
         </Container>
       </main>
     </>
