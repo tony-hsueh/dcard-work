@@ -142,10 +142,9 @@ const Blog = ({username}) => {
   }
   
   useEffect(() => {
-    if (!token) return router.push('/login')
     getBlog()
     getComments()
-  }, [token])
+  }, [])
   
   return (
     <>
