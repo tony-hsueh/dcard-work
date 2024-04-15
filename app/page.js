@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { getCookie, setCookie } from 'cookies-next';
 import dayjs from "dayjs";
@@ -125,7 +125,9 @@ const BlogsContainer = ({setAlertObj}) => {
 
   return (
     <>
-      {issues.length === 0 && <Skeleton />}
+      {issues.length === 0 && <Suspense>
+        <Skeleton />
+      </Suspense>}
       {issues.length > 0 && issues.map(issue =>  
         <div 
           className={styles.blogCard}
