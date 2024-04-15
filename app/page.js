@@ -125,9 +125,7 @@ const BlogsContainer = ({setAlertObj}) => {
 
   return (
     <>
-      {issues.length === 0 && <Suspense>
-        <Skeleton />
-      </Suspense>}
+      {issues.length === 0 && <Skeleton />}
       {issues.length > 0 && issues.map(issue =>  
         <div 
           className={styles.blogCard}
@@ -188,7 +186,9 @@ export default function Home() {
       <main className={styles.main}>
         <Container>
           <h1 className={styles.bannerText}>歡迎來到丹尼爾的部落格</h1>
-            <BlogsContainer setAlertObj={setAlertObj} />
+            <Suspense>
+              <BlogsContainer setAlertObj={setAlertObj} />
+            </Suspense>
         </Container>
       </main>
     </>
